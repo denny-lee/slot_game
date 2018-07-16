@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>今天我请客</title>
+		<link rel="stylesheet" href="easyui.css"></link>
+		<style type="text/css">
+			body {background: #efefef}
+			ul {margin-bottom: 30px;}
+			li {list-style-type:none;color:#43c3ad;text-decoration:underline;padding-left: 25px;font-size: 20px;cursor: pointer;}
+		</style>
+		<script src="jquery-3.3.1.min.js"></script>
+		<script src="jquery.easyui.min.js"></script>
+		<script type="text/javascript">
+			var save = function(id, name, times) {
+				localStorage.setItem('treat_user_id', id);
+				$.messager.confirm('提示','Hi~,' + name + ',看看你想要什么',function(r){
+				    if (r){
+				        window.location='file:///D:/front_works/html/slot_game/demo.html';
+				    }
+				});
+			}
+			var refreshList = function(d) {
+				$('#namelist').empty();
+
+				if (d) {
+					$('#namelist').append('<div style="margin-top:20px">&nbsp;</div><span>点击选择</span><br/>');
+					$('#namelist').append('<ul>');
+					for (var i in d) {
+						$('#namelist').append('<li code="'+d[i].id+'" times="' + d[i].times + '">'+d[i].name+'</li>')
+					}
+					$('#namelist').append('</ul>');
+					$('#namelist li').bind('click', function() {save($(this).attr('code'),$(this).text(),$(this).attr('times'));})
+				}
+			}
+			var search = function(v) {
+				if (v) {
+					$.get('http://localhost:8080/user?name='+v, function(data) {refreshList(data);});
+				}
+			}
+			$(function() {
+				$('#name').keyup(function() {var v = $(this).val(); search(v);});
+			})
+		</script>
+	</head>
+	<body>
+		<div style="width: 50%; float: left; margin: 0; background: ">
+			<div style="height: 300px;width: 300px;margin: 0 auto;">
+				<div style='line-height: 1.5;margin-top: 20px;'>
+					<span>请大家喝东西</span>
+					<br/>
+					<span>Who R U: </span><input id='name' type="text"></input><br/>
+					<div id='namelist'>
+
+					</div>
+				</div>
+				<div>
+					<img src="p.jpg" title='这里是个图'>
+				</div>
+
+			</div>
+		</div>
+		
+		<div style="width: 50%; float: left; margin: 0">
+			<div style='line-height: 3;margin-top: 20px;'>
+				<span>欢迎关注公众号</span>
+				<br/>
+			</div>
+			<div style="height: 300px;width: 300px;margin: 0 auto;">
+				<img src="pub.jpg">
+			</div>
+		</div>
+
+	</body>
+</html>
+
