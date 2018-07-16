@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Roulette.js Demo</title>
+		<link rel="stylesheet" href="bootstrap.css"></link>
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/ui-lightness/jquery-ui.css">
+		<link rel="stylesheet" href="bootstrap-responsive.css"></link>
+		<link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/ui-lightness/jquery-ui.css">
+		<link rel="stylesheet" href="easyui.css"></link>
+		<link rel="stylesheet" href="demo.css"></link>
+	</head>
+	<body>
+		<div class="container">
+			<div class="page-header" style="">
+				<h1>
+					Select What You Want.
+				</h1>
+			</div>
+			<div>还可选：<span id='times' style="color:red;">0</span>次</div>
+
+			<div class="row">
+				<div class="span4">
+					<div class="roulette_container" >
+						<div class="roulette" style="display:none;">
+							<img src="film.png" code='0' title='请你看一场电影'/>
+							<img src="little.png" code='1' title='请你喝一点点奶茶'/>
+							<img src="table_game.png" code='2' title='一起去玩桌游'/>
+							<img src="mdl.png" code='3' title='请你吃金拱门套餐'/>
+							<img src="starbucks.png" code='4' title='请你喝星巴克'/>
+							<img src="polo.png" code='5' title='送你钢管舞体验课一次'/>
+						</div>
+					</div>
+					<div class="btn_container">
+						<p>
+						<button class="btn btn-large btn-primary start"> START </button>
+						<button class="stop btn-large btn btn-warning"> STOP </button>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div>
+				<span id='desc'></span>
+			</div>
+		</div>
+
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/jquery-ui.min.js"></script>
+		<script src="jquery.easyui.min.js"></script>
+		<script src="roulette.js"></script>
+		<script src="demo.js"></script>
+
+	</body>
+</html>
+
