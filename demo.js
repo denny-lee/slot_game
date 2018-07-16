@@ -5,7 +5,7 @@ var baseUrl = 'http://localhost:8080';
 var reject = function(cid) {
 	$.messager.confirm('提示','拒绝意味着放弃本次选择，你确认要拒绝吗？',function(r){
 	    if (r){
-	    	$.get(baseUrl+'/reject?key='+cid, function(data) {
+	    	$.get(baseUrl+'/reject?key='+encrypData(cid,userObj.uid), function(data) {
 	    		if (data == 'ok') {
 	    			$('.start').removeAttr('disabled');
 	    		}
@@ -18,7 +18,7 @@ var showHint = function(content, cid) {
 	if (content) {
 		$('#desc').text(content);
 		if (times > 0) {
-			$('#desc').parent().append('<button title="我要再来一次" onclick="reject('+cid+')">拒绝</button>')
+			$('#desc').parent().append('<button title="我要再来一次" onclick="reject('+cid+')" style="width: 60px; height: 30px; border-radius: 3px;background: #f5b768;outline: none;font-family: Microsoft YaHei;color: white;font-size: 16px;">拒绝</button>')
 		}
 	}
 	
@@ -55,10 +55,6 @@ $(function(){
 	fetchUser(userId);
 	console.log('苟富贵，无相忘 :)');
 	
-	/*$('.roulette').find('img').hover(function(){
-		console.log($(this).height());
-	});*/
-	
 	var submitScore = function(elm) {
 		times--;
 		refreshTimes();
@@ -67,7 +63,7 @@ $(function(){
 			$.messager.alert('提示', '已记录你的选择，稍候送上','info');
 		} else {
 			var code = $(elm['0']).attr('code');
-			$.get(baseUrl+'/choosen?uid='+userObj.uid+'&key='+code, function(data) {
+			$.get(baseUrl+'/choosen?uid='+userObj.uid+'&key='+encrypData(code, userObj.uid), function(data) {
 				if (data && data.substring(0,2) == 'ok') {
 					showHint($(elm['0']).attr('title'), data.substring(3));
 				} else {
