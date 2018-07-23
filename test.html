@@ -20,10 +20,17 @@
 		<script src="jquery-3.3.1.min.js"></script>
 		<script src="jquery.easyui.min.js"></script>
 		<script type="text/javascript">
+
+			// var baseUrl = 'http://172.18.1.91:8080';
+			var baseUrl = 'http://localhost:8080';
 			var start_x=30, start_y=30;
 			var cw = 210;
 			var w = 80;
 			var ratio = 0.3;
+
+			var rotateMethod = [[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
+
+			var formData = [];
 
 			var createBlock = function(cxt, colors, type, side) {
 				var sx = start_x;
@@ -112,11 +119,11 @@
 						if (idx > 3) {
 							side = 'back';
 						}
-						if (idx == 1 || idx == 4) {
+						if (idx == 3 || idx == 6) {
 							pos = 'RU';
-						} else if (idx == 2 || idx == 7) {
+						} else if (idx == 0 || idx == 5) {
 							pos = 'LD';
-						} else if (idx == 3 || idx == 6) {
+						} else if (idx == 1 || idx == 4) {
 							pos = 'RD';
 						}
 						createBlock(cxt, colors, pos, side);
@@ -128,14 +135,14 @@
 
 					drawText(cxt, '背面', start_x+cw+40+cw/2-21, (start_y+cw/2+7));
 
-					drawText(cxt, '1', start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7);
-					drawText(cxt, '2', start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7);
-					drawText(cxt, '3', start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7+w);
-					drawText(cxt, '4', start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7+w);
-					drawText(cxt, '5', cw+40+start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7);
-					drawText(cxt, '6', cw+40+start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7);
-					drawText(cxt, '7', cw+40+start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7+w);
-					drawText(cxt, '8', cw+40+start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '1', start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '2', start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '3', start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7);
+					drawText(cxt, '4', start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7);
+					drawText(cxt, '5', cw+40+start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '6', cw+40+start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '7', cw+40+start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7);
+					drawText(cxt, '8', cw+40+start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7);
 				}
 
 				// li
@@ -175,16 +182,49 @@
 							}
 						} else if (attr == 'rotate') {
 							var clsOld = li.attr('c').split(' ');
-							var cls = clsOld.slice(1);
-							cls.push(clsOld[0]);
+							var cls = [];
+							var stat = li.data('stat') + 1;
+							if (stat > 4) {stat = stat%5;}
+							for (var i = 0; i < rotateMethod[stat].length; i++) {
+
+								cls.push(clsOld[rotateMethod[stat][i]]);
+							}
 							li.attr('c', cls.join(' '));
+							li.data('stat', stat);
 							refreshList();
 						}
 						refreshCanvas();
+						refreshData();
+
 					});
 				}
+
+				var refreshData = function() {
+					formData = [];
+					$('#op li').each(function(idx, ele){
+						var cls = $(this).attr('c').split(' ');
+						formData.push({'pos':idx, 'colors':cls});
+					});
+				}
+
 				refreshList();
 				refreshCanvas();
+				refreshData();
+
+				$('#op li').data('stat', 0);
+
+				$('#solve').click(function() {
+					refreshData();
+					// console.log(formData);
+					$.ajax({
+						url: baseUrl+'/sovleCubic', 
+						data: JSON.stringify(formData), 
+						dataType: 'text',
+						type: 'POST',
+						headers: {'Content-Type': 'application/json;charset=utf-8'},
+						success: function(data) {console.log(data);alert(data);}
+					});
+				});
 			})
 			
 		</script>
@@ -193,15 +233,18 @@
 		<div style="float:left" id="op">
 			<span>1-4 正面 ; 5-8 背面</span>
 			<ol>
-				<li c='red green blue'></li>
+				<li c='red yellow green'></li>
+				<li c='red white green'></li>
 				<li c='red yellow blue'></li>
-				<li c='red green white'></li>
-				<li c='red yellow white'></li>
-				<li c='orange green blue'></li>
+				<li c='red white blue'></li>
+				<li c='orange yellow green'></li>
+				<li c='orange white green'></li>
 				<li c='orange yellow blue'></li>
-				<li c='orange green white'></li>
-				<li c='orange yellow white'></li>
+				<li c='orange white blue'></li>
 			</ol>
+			<div style="width: 100px; height: 30px; text-align: center;">
+				<button id="solve">求解</button>
+			</div>
 		</div>
 		<div style="text-align: center; background-color: #dddddd">
 			<canvas id="cvs" width="520" height="270"></canvas>
