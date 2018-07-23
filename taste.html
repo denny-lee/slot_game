@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>今天我请客</title>
+		<link rel="stylesheet" href="easyui.css"></link>
+		<style type="text/css">
+			body {background: #efefef;padding: 20px 20px; }
+			ul {margin-bottom: 30px;padding: 0;}
+			li {list-style-type:none;text-decoration:underline;font-size: 14px;cursor: pointer;}
+			li span {padding: 5px 15px;}
+			img{
+ width:auto;
+ height:auto;
+ max-width:100%;
+ max-height:100%;
+}
+		</style>
+		<script src="jquery-3.3.1.min.js"></script>
+		<script src="jquery.easyui.min.js"></script>
+		<script type="text/javascript">
+			var baseUrl = 'http://172.18.1.91:8080';
+			function save() {
+				var uid = localStorage.getItem('treat_user_id');
+				if (uid) {
+					doSave(uid);
+				} else {
+					$.messager.prompt('提示','请输入你的全名：',function (val) {
+				        if (val){   //判断如果有输入值
+				            $.get(baseUrl+"/user?name="+val, function(d) {
+				            	if (d) {
+				            		uid = d[0].id;
+				            		doSave(uid);
+				            	}
+				            });
+				        }
+
+				    });
+				}
+			}
+
+			function doSave(uid) {
+				var taste = $('#taste').val();
+				if (taste) {
+					$.get(baseUrl+'/taste?taste='+taste+'&uid='+uid, function(data) {
+			    		if (data == 'ok') {
+			    			$.messager.alert('提示', 'OK,稍后送上','warn');
+			    		}
+					});
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div style="background: #fff;">
+			<div style="height: 600px;width: 800px;margin: 0 auto; padding: 200px 10px;">
+				<div style='padding: 20px 0; text-align: center; font-size: 22px;'>
+					有人请喝一点点奶茶啦，自己填一下口味
+				</div>
+				<div style='padding: 16px 0; text-align: center; font-size: 18px;'>
+					如：红糖马奇朵去冰三分甜加波霸
+				</div>
+				<div style='padding-top: 20px;text-align: center; '>
+					<input id='taste' type="text" style="border-radius: 6px;height: 22px; width: 300px;"></input>
+					<button onclick="save()" style="width: 60px; height: 30px; border-radius: 3px;background: #f5b768;outline: none;font-family: Microsoft YaHei;color: white;font-size: 16px;">完成</button>
+				</div>
+
+			</div>
+		</div>
+		<div style="float:left; position: absolute; top:50px; left: 50px;">
+			<ul>
+				<li><span style="color:red; font-weight: bold;">1</span>电影票</li>
+				<li><span style="color:orange; font-weight: bold;">2</span>桌游</li>
+				<li><span style="color:green; font-weight: bold;">3</span>星巴克</li>
+				<li><span style="color:blue; font-weight: bold;">4</span>金拱门</li>
+				<li><span style="color:purple; font-weight: bold;">5</span>舞蹈课/一点点</li>
+			</ul>
+		</div>
+		<div style="float:left; position: absolute; top:50px; right: 50px; width: 500px;">
+			<img src="menu.jpg" />
+		</div>
+		
+
+	</body>
+</html>
+
