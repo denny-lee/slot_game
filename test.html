@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Rubic's Cube</title>
+		<link rel="stylesheet" href="easyui.css"></link>
+		<style type="text/css">
+			li {padding: 2px 0}
+			li div {float: right;width: 22px; height: 22px;}
+			.red {background-color: red;}
+			.green {background-color: green;}
+			.blue {background-color: blue;}
+			.white {background-color: white;}
+			.yellow {background-color: yellow;}
+			.orange {background-color: orange;}
+			.rotate {background: url(glyphicons-halflings.png); background-repeat: no-repeat; background-position: -212px -21px;}
+			.up {background: url(glyphicons-halflings.png); background-repeat: no-repeat; background-position: -285px -92px; }
+			.down {background: url(glyphicons-halflings.png); background-repeat: no-repeat; background-position: -308px -92px; }
+		</style>
+		<script src="jquery-3.3.1.min.js"></script>
+		<script src="jquery.easyui.min.js"></script>
+		<script type="text/javascript">
+			var start_x=30, start_y=30;
+			var cw = 210;
+			var w = 80;
+			var ratio = 0.3;
+
+			var createBlock = function(cxt, colors, type, side) {
+				var sx = start_x;
+				var sy = start_y;
+				if (side == 'back') {
+					sx = start_x + cw + 40;
+				}
+				var step_x = w*ratio;
+				var step_y = w*ratio;
+				var sw_x = w;
+				var sw_y = w;
+				if (type == 'RU') {
+					sx = sx + cw;
+					step_x = -w*ratio;
+					sw_x = -w;
+				} else if (type == 'RD') {
+					sx = sx + cw;
+					sy = start_y + cw;
+					step_x = -w*ratio;
+					step_y = -w*ratio;
+					sw_x = -w;
+					sw_y = -w;
+				} else if (type == 'LD') {
+					sy = start_y + cw;
+					step_y = -w*ratio;
+					sw_y = -w;
+				}
+
+				cxt.fillStyle=colors[2];
+				cxt.beginPath();
+				cxt.moveTo(sx, sy);
+				cxt.lineTo(sx+sw_x, sy);
+				cxt.lineTo(sx+sw_x+step_x, sy+step_y);
+				cxt.lineTo(sx+step_x, sy+step_y);
+				cxt.fill();
+
+				cxt.fillStyle=colors[1];
+				cxt.beginPath();
+				cxt.moveTo(sx, sy);
+				cxt.lineTo(sx+step_x, sy+step_y);
+				cxt.lineTo(sx+step_x, sy+sw_y+step_y);
+				cxt.lineTo(sx, sy+sw_y);
+				cxt.fill();
+
+				cxt.fillStyle=colors[0];
+				cxt.beginPath();
+				cxt.rect(sx+step_x, sy+step_y, sw_x, sw_y);
+				cxt.fill();
+
+				
+			} 
+			var drawText = function(cxt, text, x, y) {
+				cxt.font = "22px Yahei";
+				cxt.fillStyle='rgb(0,0,0)';
+				cxt.fillText(text, x, y);
+			}
+			var drawVerticalLine = function(cxt, x, y, len) {
+				
+				var lingrad = cxt.createLinearGradient(x,y,x,y+len);
+				lingrad.addColorStop(0, 'rgb(0,0,0)');
+				lingrad.addColorStop(0.5, '#a0a0a0');
+				lingrad.addColorStop(1, 'rgb(0,0,0)');
+				cxt.strokeStyle=lingrad;
+				cxt.beginPath();
+				cxt.moveTo(x, y);
+				cxt.lineTo(x, y+len);
+				cxt.closePath();
+				cxt.stroke();
+			}
+			$(function() {
+				// canvas
+				var c = document.getElementById("cvs");
+				var cxt=c.getContext("2d");
+				// var colors = ['rgba(0,255,0,0.7)', 'rgba(0,0,255,0.7)', 'rgba(200,180,0,0.7)'];
+				
+
+				var refreshCanvas = function() {
+					cxt.clearRect(0,0,c.width,c.height);
+					var colors;
+					var side;
+					var pos;
+					$('#op li').each(function(idx, ele){
+						colors = $(this).attr('c').split(' ');
+						side = '';
+						pos = '';
+						if (idx > 3) {
+							side = 'back';
+						}
+						if (idx == 1 || idx == 4) {
+							pos = 'RU';
+						} else if (idx == 2 || idx == 7) {
+							pos = 'LD';
+						} else if (idx == 3 || idx == 6) {
+							pos = 'RD';
+						}
+						createBlock(cxt, colors, pos, side);
+						
+					});
+
+					drawText(cxt, '正面', (start_x+cw)/2-7, (start_y+cw/2+7));
+					drawVerticalLine(cxt, start_x+cw+20, start_y, cw);
+
+					drawText(cxt, '背面', start_x+cw+40+cw/2-21, (start_y+cw/2+7));
+
+					drawText(cxt, '1', start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7);
+					drawText(cxt, '2', start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7);
+					drawText(cxt, '3', start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '4', start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '5', cw+40+start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7);
+					drawText(cxt, '6', cw+40+start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7);
+					drawText(cxt, '7', cw+40+start_x+w*ratio+w/2-5+w, start_x+w*ratio+w/2+7+w);
+					drawText(cxt, '8', cw+40+start_x+w*ratio+w/2-5, start_x+w*ratio+w/2+7+w);
+				}
+
+				// li
+				var refreshList = function() {
+					$('li div').unbind('click');
+					$('#op li').empty();
+					$('#op li').each(function(idx, ele){
+						var cls = $(this).attr('c').split(' ');
+						for (var i in cls) {
+							$(this).append('<span class="'+cls[i]+'">&#12288;</span>');
+						}
+						// if (idx == 0) {
+							// $(this).append('<div class="down"></div><div></div><div class="rotate"></div>');
+						// } else if (idx == 7) {
+							// $(this).append('<div></div><div class="up"></div><div class="rotate"></div>');
+						// } else {
+							$(this).append('<div class="down"></div><div class="up"></div><div class="rotate"></div>');
+						// }
+					});
+
+					bindOp();
+				}
+
+				var bindOp = function() {
+					$('li div').click(function(ele) {
+						var attr = $(this).attr('class');
+						var li = $(this).parent();
+						if (attr == 'up') {
+							var target = li.prev();
+							if (target) {
+								target.before(li);
+							}
+						} else if (attr == 'down') {
+							var target = li.next();
+							if (target) {
+								target.after(li);
+							}
+						} else if (attr == 'rotate') {
+							var clsOld = li.attr('c').split(' ');
+							var cls = clsOld.slice(1);
+							cls.push(clsOld[0]);
+							li.attr('c', cls.join(' '));
+							refreshList();
+						}
+						refreshCanvas();
+					});
+				}
+				refreshList();
+				refreshCanvas();
+			})
+			
+		</script>
+	</head>
+	<body>
+		<div style="float:left" id="op">
+			<span>1-4 正面 ; 5-8 背面</span>
+			<ol>
+				<li c='red green blue'></li>
+				<li c='red yellow blue'></li>
+				<li c='red green white'></li>
+				<li c='red yellow white'></li>
+				<li c='orange green blue'></li>
+				<li c='orange yellow blue'></li>
+				<li c='orange green white'></li>
+				<li c='orange yellow white'></li>
+			</ol>
+		</div>
+		<div style="text-align: center; background-color: #dddddd">
+			<canvas id="cvs" width="520" height="270"></canvas>
+			
+		</div>
+
+	</body>
+</html>
+
